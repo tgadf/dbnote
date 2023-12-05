@@ -10,7 +10,7 @@ from pandas import Series, DataFrame
 
 class DownloadRecord:
     def __repr__(self):
-        return f"DownloadRecord(db={self.db}, name={self.name}, rTypes={self.rTypes}"
+        return f"DownloadRecord(db={self.db}, name={self.name}, rTypes={self.rTypes})"
         
     def __init__(self, db, name, rTypes: list, **kwargs):
         self.verbose = kwargs.get('verbose', False)
@@ -147,6 +147,23 @@ class DownloadRecord:
         idxVal = self.recordData['Index'].get(index)
         errVal = self.recordData['Error'].get(index)
         retval = any([obj is True for obj in [idxVal, errVal]])
+        return retval
+    
+    def numKnown(self) -> 'int':
+        if not isinstance(self.recordData, dict):
+            self.load(verbose=False)
+        assert isinstance(self.recordData.get('Index'), (dict, Series)), "Index records are not available"
+        assert isinstance(self.recordData.get('Error'), (dict, Series)), "Error records are not available"
+        total = set(self.recordData['Index'].keys()).union(set(self.recordData['Error'].keys()))
+        retval = len(total)
+        return retval
+
+    def isError(self, index: str) -> 'bool':
+        if not isinstance(self.recordData, dict):
+            self.load(verbose=False)
+        assert isinstance(self.recordData.get('Error'), (dict, Series)), "Error records are not available"
+        errVal = self.recordData['Error'].get(index)
+        retval = errVal is True
         return retval
 
     ################################################################################

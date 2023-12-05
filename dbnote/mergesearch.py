@@ -5,6 +5,7 @@ __all__ = ["MergeSearchArtist"]
 from musicdb import getdbio
 from pandas import DataFrame, Series, concat
 from utils import header, FileInfo, getFile
+import gc
 from .download import DownloadRecord
 
 
@@ -58,18 +59,24 @@ class MergeSearchArtist:
         print(f"  ==> Created copy of local SearchArtist data with {data.shape} shape")
         
     def copyFromLocal(self, force=False):
-        data = self.getLocalSearchArtistData()
-        print(f"New Local Shape:  {data.shape}")
         dataGlobal = self.getGlobalSearchArtistData()
         print(f"Old Global Shape: {dataGlobal.shape}")
+        del dataGlobal
+        gc.collect()
+        data = self.getLocalSearchArtistData()
+        print(f"New Local Shape:  {data.shape}")
         if force is True:
             self.saveGlobalSearchArtistData(data=data)
         else:
             print("Only testing. Will not copy Search Artist From Local to Global")
             return
 
+        del data
+        gc.collect()
         newdata = self.getGlobalSearchArtistData()
         print(f"New Global Shape: {newdata.shape}")
+        del newdata
+        gc.collect()
 
     def copyFromGlobal(self, force=False):
         data = self.getGlobalSearchArtistData()

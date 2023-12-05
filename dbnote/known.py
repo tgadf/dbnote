@@ -10,7 +10,7 @@ from pandas import Series, DataFrame
 
 class KnownRecord:
     def __repr__(self):
-        return f"DownloadRecord(db={self.db}, name={self.name}"
+        return f"DownloadRecord(db={self.db}, name={self.name})"
         
     def __init__(self, db, name, **kwargs):
         self.verbose = kwargs.get('verbose', False)
@@ -101,7 +101,7 @@ class KnownRecord:
     def setData(self, data):
         if not isinstance(self.recordData, dict):
             self.load(verbose=False)
-        assert isinstance(self.recordData.get('Data'), dict), "Data records are not available"
+        assert isinstance(data, dict), "Data is not a dict"
         self.recordData['Data'] = data
         
     def mergeData(self, data):
